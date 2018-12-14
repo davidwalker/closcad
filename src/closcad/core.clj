@@ -46,26 +46,58 @@
 (defn indent [ctx]
   (apply str (repeat (:indent ctx) " ")))
 
-(defn scad
-  ([item]
-   (scad item {:indent 0}))
-  ([item ctx]
+(declare render-item)
+
+(defn render-keyword-item [ctx item]
+  (let [[n args & children] (normalize-scad-vector item)]
+    (str (indent ctx) (name n) "(" (apply str (interpose ", " (map transform-arg args))) ")"
+         (if children
+           (str " {\n"
+                (let [ctx (update ctx :indent + 4)]
+                  (apply str (interpose \newline (map #(render-item ctx %) children))))
+                "\n" (indent ctx) "}")
+           ";"))))
+
+(defn render-fn-item [ctx item]
+  (let [[n args & children] (normalize-scad-vector item)]
+    (render-item ctx (apply n args children))))
+
+
+(defn render-variables [ctx m]
+  (apply str
+   (interleave (repeat (indent ctx ))
+               (map transform-arg m)
+               (repeat ";\n"))))
+
+(scad {:a 1 :b 1/2 :c "hi"})
+
+(defn render-item
+  ([ctx item]
    (cond
      (vector? item)
-     (let [[n args & children] (normalize-scad-vector item)]
+     (let [f (first item)]
        (cond
-         (keyword? n)
-         (str (indent ctx) (name n) "(" (apply str (interpose ", " (map transform-arg args))) ")"
-              (if children
-                (str " {\n"
-                     (let [ctx (update ctx :indent + 4)]
-                       (apply str (interpose \newline (map #(scad % ctx) children))))
-                     "\n" (indent ctx) "}")
-                ";"))
+         (keyword? f)
+         (render-keyword-item ctx item)
 
+         (fn? f)
+         (render-fn-item ctx item)
 
-         (fn? n)
-         (scad (apply n args children)))))))
+         :else
+         (render-item ctx (seq item))
+         ))
+
+     (map? item)
+     (render-variables ctx item)
+
+     (seq? item)
+     (apply str (interpose "\n" (map (partial render-item ctx) item)))
+     )))
+;; (scad {:a 1 :c "hi"} [:cube] [:cylinder])
+
+(defn scad
+  ([& items]
+   (render-item {:indent 0} items)))
 
 (deftest scad-test
   (is (= "cube();"  (scad [:cube {}])))
@@ -78,9 +110,11 @@
   (is (= "cube(a = [1, 2, \"foo\"], b = \"bar\");"  (scad [:cube {:a [1 2 "foo"]
                                                     :b "bar"}])))
 
+  (is (= "a = 1;\nb = 0.5;\nc = \"hi\";\n"  (scad {:a 1 :b 1/2 :c "hi"})))
 
+  (is (= "cube();\ncube();"  (scad [:cube {}] [:cube {}])))
 
-  ;; (is (= "cube();\ncube();"  (scad [:cube {}][:cube {}])))
+  (is (= "$a = 1;\nb = 0.5;\n$fn = 4;\n"  (scad {:$a 1 "b" 1/2 "$fn" 4})))
 
 
   (is (=
@@ -105,6 +139,13 @@
   (let [my-component (fn [{:keys [a b c]}]
                        [:cube {:size [a b c]}])]
     (is (= "cube(size = [1, 2, 3]);"
+           (scad [my-component {:a 1 :b 2 :c 3}]))))
+
+
+  ;; todo would be nice to output comment with component names for easier reading
+  #_(let [my-component (fn [{:keys [a b c]}]
+                       [:cube {:size [a b c]}])]
+    (is (= "/** my-component -> **/\ncube(size = [1, 2, 3]);\n/** <- my-component **/"
            (scad [my-component {:a 1 :b 2 :c 3}]))))
 
 
