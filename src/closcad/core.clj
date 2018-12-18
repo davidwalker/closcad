@@ -3,8 +3,6 @@
    [clojure.string :as str]
    [clojure.test :refer [deftest testing is]]))
 
-#_(def v [1 2 3])
-
 (defn arg-val [v]
   (cond
     (vector? v)
@@ -33,16 +31,6 @@
     :else
     (into [n {}] args)))
 
-
-
-#_(normalize [:foo])
-#_(normalize [:foo {:a :b}])
-#_(normalize-scad-vector [:foo {:a :b} [:bar] ])
-#_(normalize-scad-vector [:foo {:a :b} [:bar] [:baz] ])
-#_(normalize-scad-vector [:foo [:bar] [:baz]])
-
-#_(def ctx {:indent 4})
-
 (defn indent [ctx]
   (apply str (repeat (:indent ctx) " ")))
 
@@ -69,8 +57,6 @@
                (map transform-arg m)
                (repeat ";\n"))))
 
-(scad {:a 1 :b 1/2 :c "hi"})
-
 (defn render-item
   ([ctx item]
    (cond
@@ -91,70 +77,8 @@
      (render-variables ctx item)
 
      (seq? item)
-     (apply str (interpose "\n" (map (partial render-item ctx) item)))
-     )))
-;; (scad {:a 1 :c "hi"} [:cube] [:cylinder])
+     (apply str (interpose "\n" (map (partial render-item ctx) item))))))
 
 (defn scad
   ([& items]
    (render-item {:indent 0} items)))
-
-(deftest scad-test
-  (is (= "cube();"  (scad [:cube {}])))
-  (is (= "cube(size = [1, 2, 3]);"  (scad [:cube {:size [1 2 3]}])))
-  (is (= "cylinder(d = 10, h = 5);"  (scad [:cylinder {:d 10 :h 5}])))
-  (is (= "cylinder(d = 0.5);"  (scad [:cylinder {:d (/ 1 2)}])))
-
-  (is (= "cube(size = [1, 2, 0.5]);"  (scad [:cube {:size [1 2 (/ 1 2)]}])))
-
-  (is (= "cube(a = [1, 2, \"foo\"], b = \"bar\");"  (scad [:cube {:a [1 2 "foo"]
-                                                    :b "bar"}])))
-
-  (is (= "a = 1;\nb = 0.5;\nc = \"hi\";\n"  (scad {:a 1 :b 1/2 :c "hi"})))
-
-  (is (= "cube();\ncube();"  (scad [:cube {}] [:cube {}])))
-
-  (is (= "$a = 1;\nb = 0.5;\n$fn = 4;\n"  (scad {:$a 1 "b" 1/2 "$fn" 4})))
-
-
-  (is (=
-"translate(v = [4, 5, 6]) {
-    cube(size = [1, 2, 3]);
-}"
-(scad [:translate
-       {:v [4 5 6]}
-       [:cube {:size [1 2 3]}]])))
-
-  (is (=
-       "rotate(v = [90, 0, 180]) {
-    translate(v = [4, 5, 6]) {
-        cube(size = [1, 2, 3]);
-    }
-}"
-       (scad [:rotate {:v [90 0 180]}
-              [:translate {:v [4 5 6]}
-               [:cube {:size [1 2 3]}]]])))
-
-
-  (let [my-component (fn [{:keys [a b c]}]
-                       [:cube {:size [a b c]}])]
-    (is (= "cube(size = [1, 2, 3]);"
-           (scad [my-component {:a 1 :b 2 :c 3}]))))
-
-
-  ;; todo would be nice to output comment with component names for easier reading
-  #_(let [my-component (fn [{:keys [a b c]}]
-                       [:cube {:size [a b c]}])]
-    (is (= "/** my-component -> **/\ncube(size = [1, 2, 3]);\n/** <- my-component **/"
-           (scad [my-component {:a 1 :b 2 :c 3}]))))
-
-
-  (is (=
-       "difference() {
-    cube(size = [1, 2, 3]);
-    cylinder(size = [4, 5, 6]);
-}"
-       (scad [:difference
-              [:cube {:size [1 2 3]}]
-              [:cylinder {:size [4 5 6]}]])))
-  )
