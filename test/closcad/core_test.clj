@@ -11,8 +11,9 @@
 
   (is (= "cube(size = [1, 2, 0.5]);"  (scad/scad [:cube {:size [1 2 (/ 1 2)]}])))
 
-  (is (= "cube(a = [1, 2, \"foo\"], b = \"bar\");"  (scad/scad [:cube {:a [1 2 "foo"]
-                                                    :b "bar"}])))
+  (is (= "cube(a = [1, 2, \"foo\"], b = \"bar\");"
+         (scad/scad [:cube {:a [1 2 "foo"]
+                            :b "bar"}])))
 
   (is (= "a = 1;\nb = 0.5;\nc = \"hi\";\n"  (scad/scad {:a 1 :b 1/2 :c "hi"})))
 
@@ -26,8 +27,8 @@
     cube(size = [1, 2, 3]);
 }"
 (scad/scad [:translate
-       {:v [4 5 6]}
-       [:cube {:size [1 2 3]}]])))
+            {:v [4 5 6]}
+            [:cube {:size [1 2 3]}]])))
 
   (is (=
 "rotate(v = [90, 0, 180]) {
@@ -35,9 +36,9 @@
         cube(size = [1, 2, 3]);
     }
 }"
-       (scad/scad [:rotate {:v [90 0 180]}
-              [:translate {:v [4 5 6]}
-               [:cube {:size [1 2 3]}]]])))
+(scad/scad [:rotate {:v [90 0 180]}
+            [:translate {:v [4 5 6]}
+             [:cube {:size [1 2 3]}]]])))
 
 
   (testing "component with args"
@@ -55,7 +56,7 @@
 
   ;; TODO: it would be nice to output a comment with component names for easier reading
   #_(let [my-component (fn [{:keys [a b c]}]
-                       [:cube {:size [a b c]}])]
+                         [:cube {:size [a b c]}])]
     (is (= "/** my-component -> **/\ncube(size = [1, 2, 3]);\n/** <- my-component **/"
            (scad/scad [my-component {:a 1 :b 2 :c 3}]))))
 
@@ -66,5 +67,5 @@
     cylinder(size = [4, 5, 6]);
 }"
        (scad/scad [:difference
-              [:cube {:size [1 2 3]}]
-              [:cylinder {:size [4 5 6]}]]))))
+                   [:cube {:size [1 2 3]}]
+                   [:cylinder {:size [4 5 6]}]]))))
