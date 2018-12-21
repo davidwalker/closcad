@@ -1,7 +1,6 @@
 (ns closcad.core
   (:require
-   [clojure.string :as str]
-   [clojure.test :refer [deftest testing is]]))
+   [clojure.string :as str]))
 
 (defn arg-val [v]
   (cond
