@@ -46,8 +46,8 @@
            ";"))))
 
 (defn render-fn-item [ctx item]
-  (let [[n args & children] (normalize-scad-vector item)]
-    (render-item ctx (apply n args children))))
+  (let [[n & args] item]
+    (render-item ctx (apply n args))))
 
 
 (defn render-variables [ctx m]

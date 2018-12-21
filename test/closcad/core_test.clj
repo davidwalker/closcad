@@ -40,10 +40,17 @@
                [:cube {:size [1 2 3]}]]])))
 
 
-  (let [my-component (fn [{:keys [a b c]}]
-                       [:cube {:size [a b c]}])]
-    (is (= "cube(size = [1, 2, 3]);"
-           (scad/scad [my-component {:a 1 :b 2 :c 3}]))))
+  (testing "component with args"
+    (let [my-component (fn [{:keys [a b c]}]
+                         [:cube {:size [a b c]}])]
+      (is (= "cube(size = [1, 2, 3]);"
+             (scad/scad [my-component {:a 1 :b 2 :c 3}])))))
+
+  (testing "component without args"
+    (let [my-component (fn []
+                         [:cube {:size [1 2 3]}])]
+      (is (= "cube(size = [1, 2, 3]);"
+             (scad/scad [my-component ])))))
 
 
   ;; TODO: it would be nice to output a comment with component names for easier reading
