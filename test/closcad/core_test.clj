@@ -79,4 +79,8 @@
 
   (is (= "use <my-lib.scad>;\ncube(size = 10);"
          (scad/scad [[:use "my-lib.scad"]
-                     [:cube {:size 10}]]))))
+                     [:cube {:size 10}]])))
+
+  (is (= "use <my-lib.scad>;\nuse <other-lib.scad>;"
+         (scad/scad [:use ["my-lib.scad"
+                           "other-lib.scad"]]))))

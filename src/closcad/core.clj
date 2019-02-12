@@ -51,8 +51,14 @@
            ";"))))
 
 (defn render-use-include [ctx item]
-  (let [[command lib-name] item]
-    (str (indent ctx) (name command) " <" lib-name ">;")))
+  (let [[command lib-names] item
+        lib-names (if (string? lib-names)
+                    [lib-names]
+                    lib-names)]
+    (str/join \newline
+              (map (fn [lib-name]
+                     (str (indent ctx) (name command) " <" lib-name ">;"))
+                   lib-names))))
 
 (doseq [k [:use :include]]
   (defmethod render-keyword-vector-item k
