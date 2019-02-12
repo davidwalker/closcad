@@ -35,7 +35,7 @@
 
 (declare render-item)
 
-(defn render-keyword-item [ctx item]
+(defn render-keyword-vector-item [ctx item]
   (let [[n args & children] (normalize-scad-vector item)]
     (str (indent ctx) (name n) "(" (apply str (interpose ", " (map transform-arg args))) ")"
          (if children
@@ -45,10 +45,21 @@
                 "\n" (indent ctx) "}")
            ";"))))
 
-(defn render-fn-item [ctx item]
+(defn render-fn-vector-item [ctx item]
   (let [[n & args] item]
     (render-item ctx (apply n args))))
 
+(defn render-vector-item [ctx item]
+  (let [f (first item)]
+    (cond
+      (keyword? f)
+      (render-keyword-vector-item ctx item)
+
+      (fn? f)
+      (render-fn-vector-item ctx item)
+
+      :else
+      (render-item ctx (seq item)))))
 
 (defn render-variables [ctx m]
   (apply str
@@ -60,17 +71,7 @@
   ([ctx item]
    (cond
      (vector? item)
-     (let [f (first item)]
-       (cond
-         (keyword? f)
-         (render-keyword-item ctx item)
-
-         (fn? f)
-         (render-fn-item ctx item)
-
-         :else
-         (render-item ctx (seq item))
-         ))
+     (render-vector-item ctx item)
 
      (map? item)
      (render-variables ctx item)
