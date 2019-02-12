@@ -84,3 +84,19 @@
   (is (= "use <my-lib.scad>;\nuse <other-lib.scad>;"
          (scad/scad [:use ["my-lib.scad"
                            "other-lib.scad"]]))))
+
+
+(deftest default-args-test
+
+  (is (= "cube(size = [1, 2, 3]);"
+         (scad/scad [:cube [1 2 3]])))
+
+  (is (= "sphere(r = 3);"
+         (scad/scad [:sphere 3])))
+
+
+  (is (= "translate(v = [1, 2, 3]) {
+    cube(size = [3, 4, 5]);
+}"
+         (scad/scad [:translate [1 2 3]
+                     [:cube [3 4 5]]]))))

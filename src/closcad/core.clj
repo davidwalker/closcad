@@ -2,6 +2,19 @@
   (:require
    [clojure.string :as str]))
 
+(def default-args {:cube       :size
+                   :sphere     :r
+                   :square     :size
+                   :circle     :r
+                   :scale      :v
+                   :resize     :newsize
+                   :rotate     :a
+                   :translate  :v
+                   :mirror     :v
+                   :multmatrix :m
+                   :color      :c
+                   :offset     :r})
+
 (defn arg-val [v]
   (cond
     (vector? v)
@@ -28,7 +41,9 @@
     (into [n] args)
 
     :else
-    (into [n {}] args)))
+    (if-let [da (n default-args)]
+      (into [n {da (first args)}] (rest args))
+      (into [n {}] args))))
 
 (defn indent [ctx]
   (apply str (repeat (:indent ctx) " ")))
