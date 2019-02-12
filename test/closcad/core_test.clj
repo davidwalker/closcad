@@ -68,4 +68,15 @@
 }"
        (scad/scad [:difference
                    [:cube {:size [1 2 3]}]
-                   [:cylinder {:size [4 5 6]}]]))))
+                   [:cylinder {:size [4 5 6]}]])))
+
+
+  (is (= "use <my-lib.scad>;"
+         (scad/scad [:use "my-lib.scad"])))
+
+  (is (= "include <my-lib.scad>;"
+         (scad/scad [:include "my-lib.scad"])))
+
+  (is (= "use <my-lib.scad>;\ncube(size = 10);"
+         (scad/scad [[:use "my-lib.scad"]
+                     [:cube {:size 10}]]))))

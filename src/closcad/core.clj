@@ -35,7 +35,12 @@
 
 (declare render-item)
 
-(defn render-keyword-vector-item [ctx item]
+(defmulti render-keyword-vector-item
+  (fn [ctx item]
+    (first item)))
+
+(defmethod render-keyword-vector-item :default
+  [ctx item]
   (let [[n args & children] (normalize-scad-vector item)]
     (str (indent ctx) (name n) "(" (apply str (interpose ", " (map transform-arg args))) ")"
          (if children
@@ -44,6 +49,15 @@
                   (apply str (interpose \newline (map #(render-item ctx %) children))))
                 "\n" (indent ctx) "}")
            ";"))))
+
+(defn render-use-include [ctx item]
+  (let [[command lib-name] item]
+    (str (indent ctx) (name command) " <" lib-name ">;")))
+
+(doseq [k [:use :include]]
+  (defmethod render-keyword-vector-item k
+    [ctx item]
+    (render-use-include ctx item)))
 
 (defn render-fn-vector-item [ctx item]
   (let [[n & args] item]
