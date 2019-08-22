@@ -100,3 +100,14 @@
 }"
          (scad/scad [:translate [1 2 3]
                      [:cube [3 4 5]]]))))
+
+
+(deftest modifiers-test
+  (doseq [modifier #{"#" "%" "!" "*"}]
+    (let [kw (keyword (str modifier "cube"))]
+      (is (= (str modifier "cube(size = [1, 2, 3]);")
+             (scad/scad [kw {:size [1 2 3]}])))
+
+      (testing "default args with modifiers"
+        (is (= (str modifier "cube(size = [1, 2, 3]);")
+               (scad/scad [kw [1 2 3]])))))))
