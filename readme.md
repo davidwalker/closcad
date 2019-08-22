@@ -4,7 +4,7 @@ Create OpenSCAD models using hiccup inspired Clojure data structures.
 
 ## Usage
 
-At the moment you have to use deps.edn git dependencies. so add something like this to your deps.edn file:
+At the moment you have to use deps.edn git dependencies. So add something like this to your deps.edn file:
 
 ```clojure
 closcad {:git/url "https://github.com/davidwalker/closcad"
