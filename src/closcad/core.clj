@@ -28,7 +28,7 @@
 
 (defn arg-val [v]
   (cond
-    (vector? v)
+    (sequential? v)
     (str "["  (apply str (interpose ", " (map arg-val v))) "]")
 
     (ratio? v)

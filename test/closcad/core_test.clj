@@ -21,6 +21,7 @@
 
   (is (= "$a = 1;\nb = 0.5;\n$fn = 4;\n"  (scad/scad {:$a 1 "b" 1/2 "$fn" 4})))
 
+  (is (= "cube(size = [2, 3, 4]);"  (scad/scad [:cube (map inc [1 2 3])])))
 
   (is (=
 "translate(v = [4, 5, 6]) {
