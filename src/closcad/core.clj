@@ -2,6 +2,9 @@
   (:require
    [clojure.string :as str]))
 
+
+(def modifiers #{\# \% \! \*})
+
 (def default-args {:cube       :size
                    :sphere     :r
                    :square     :size
@@ -14,6 +17,14 @@
                    :multmatrix :m
                    :color      :c
                    :offset     :r})
+
+
+(defn remove-modifier
+  "Remove the modifier from a keyword. e.g. :#cube becomes :cube"
+  [n]
+  (if (modifiers (first (name n)))
+    (keyword (subs (name n) 1))
+    n))
 
 (defn arg-val [v]
   (cond
@@ -41,7 +52,7 @@
     (into [n] args)
 
     :else
-    (if-let [da (n default-args)]
+    (if-let [da ((remove-modifier n) default-args)]
       (into [n {da (first args)}] (rest args))
       (into [n {}] args))))
 
