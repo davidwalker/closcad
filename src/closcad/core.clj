@@ -16,7 +16,8 @@
                    :mirror     :v
                    :multmatrix :m
                    :color      :c
-                   :offset     :r})
+                   :offset     :r
+                   :import     :file})
 
 
 (defn remove-modifier

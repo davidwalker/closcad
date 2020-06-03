@@ -100,7 +100,10 @@
     cube(size = [3, 4, 5]);
 }"
          (scad/scad [:translate [1 2 3]
-                     [:cube [3 4 5]]]))))
+                     [:cube [3 4 5]]])))
+
+  (is (= "import(file = \"foobar.stl\");"
+         (scad/scad [:import "foobar.stl"]))))
 
 
 (deftest modifiers-test
