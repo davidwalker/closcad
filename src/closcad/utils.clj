@@ -10,8 +10,7 @@
 (defn write
   [f & v]
   (let [res (apply scad/scad v)]
-    (spit f res)
-    res))
+    (spit f res)))
 
 (defn launch
   [f & v]
