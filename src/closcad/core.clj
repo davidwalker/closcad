@@ -20,6 +20,21 @@
                    :import     :file})
 
 
+(defprotocol Renderable
+  (render [item ctx])
+  (render-arg-val [item]))
+
+(defn renderable? [x]
+  (satisfies? Renderable x))
+
+(deftype Scad-literal [s]
+  Renderable
+  (render [item ctx] s)
+  (render-arg-val [item] s))
+
+(defn literal [x]
+  (Scad-literal. x))
+
 (defn remove-modifier
   "Remove the modifier from a keyword. e.g. :#cube becomes :cube"
   [n]
@@ -29,6 +44,9 @@
 
 (defn arg-val [v]
   (cond
+    (renderable? v)
+    (render-arg-val v)
+
     (sequential? v)
     (str "["  (apply str (interpose ", " (map arg-val v))) "]")
 
@@ -117,6 +135,9 @@
 (defn render-item
   ([ctx item]
    (cond
+     (renderable? item)
+     (render item ctx)
+
      (vector? item)
      (render-vector-item ctx item)
 

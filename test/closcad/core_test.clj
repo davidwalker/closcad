@@ -115,3 +115,10 @@
       (testing "default args with modifiers"
         (is (= (str modifier "cube(size = [1, 2, 3]);")
                (scad/scad [kw [1 2 3]])))))))
+
+(deftest literal-test
+  (is (= "literals are rendered exactly as is"
+         (scad/scad (scad/literal "literals are rendered exactly as is"))))
+
+  (is (= "cube(foo = my-literal);"
+         (scad/scad [:cube {:foo (scad/literal "my-literal")}]))))
