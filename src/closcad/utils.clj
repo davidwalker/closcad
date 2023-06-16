@@ -40,8 +40,8 @@
 (defn to-stl
   [f & v]
   (let [scad-source (apply scad/scad v)
-        temp-scad-file (java.io.File/createTempFile "closcad" ".scad")
-        stl-file       (io/as-file f)]
+        stl-file       (io/as-file f)
+        temp-scad-file (java.io.File/createTempFile "closcad" ".scad" (.getParentFile stl-file))]
     (try
       (spit temp-scad-file scad-source)
       (let [res (shell/sh "openscad"
