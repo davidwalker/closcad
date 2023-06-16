@@ -17,7 +17,8 @@
                    :multmatrix :m
                    :color      :c
                    :offset     :r
-                   :import     :file})
+                   :import     :file
+                   :linear_extrude :height})
 
 
 (defprotocol Renderable
