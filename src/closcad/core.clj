@@ -42,10 +42,17 @@
     (keyword (subs (name n) 1))
     n))
 
+(declare render-vector-item)
+
 (defn arg-val [v]
   (cond
     (renderable? v)
     (render-arg-val v)
+
+    (and (vector? v)
+         (or (keyword? (first v))
+             (fn? (first v))))
+    (render-vector-item {:indent 0 :arg true} v)
 
     (sequential? v)
     (str "["  (apply str (interpose ", " (map arg-val v))) "]")
@@ -93,7 +100,8 @@
                 (let [ctx (update ctx :indent + 4)]
                   (apply str (interpose \newline (map #(render-item ctx %) children))))
                 "\n" (indent ctx) "}")
-           ";"))))
+           (if (:arg ctx) "" ";")))))
+
 
 (defn render-use-include [ctx item]
   (let [[command lib-names] item

@@ -122,3 +122,7 @@
 
   (is (= "cube(foo = my-literal);"
          (scad/scad [:cube {:foo (scad/literal "my-literal")}]))))
+
+(deftest function-call-in-arg-position-test
+  (is (= "cube(foo = height(bar = 2));"
+         (scad/scad [:cube {:foo [:height {:bar 2}]}]))))
