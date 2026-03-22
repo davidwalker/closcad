@@ -184,3 +184,12 @@
        [:offset r
         [:offset (- r)
          [square [x y]]]]]]]))
+
+
+(defn outer-cylinder-d [{d :d
+                         fn :fn}]
+
+  (let [r (* 1/2 d)
+        fn (or fn 360)
+        fudge (/ 1 (Math/cos (Math/toRadians (/ 180 fn))))]
+    (* 2 r fudge)))
