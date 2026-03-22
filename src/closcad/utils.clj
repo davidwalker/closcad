@@ -46,6 +46,9 @@
       (spit temp-scad-file scad-source)
       (let [res (shell/sh "openscad"
                           "-o" (.getAbsolutePath stl-file)
+                          "--enable" "all"
+                          "--backend" "Manifold"
+                          "--export-format" "binstl"
                           (.getAbsolutePath temp-scad-file))]
         (if (zero? (:exit res))
           (.getAbsolutePath stl-file)
